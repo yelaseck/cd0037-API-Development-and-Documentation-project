@@ -80,7 +80,7 @@ Error return a JSON:<br>
 * General: Return a categories list.
 * `curl http://127.0.0.1:5000/categories`<br>
 
-{
+```{
   "categories": {
     "1": "Science", 
     "2": "Art", 
@@ -92,6 +92,7 @@ Error return a JSON:<br>
   "success": true, 
   "total_categories": 6
 }
+```
 
 
 #### GET /questions
@@ -99,7 +100,7 @@ Error return a JSON:<br>
 * General: Return a questions list paginated in groups of 10.
 * `curl http://127.0.0.1:5000/questions`<br>
 
- {
+```{
   "categories": {
     "1": "Science", 
     "2": "Art", 
@@ -184,6 +185,7 @@ Error return a JSON:<br>
   "success": true, 
   "total_questions": 18
 }
+```
 
 
 #### DELETE /questions/\<int:question_id\>
@@ -203,11 +205,13 @@ This endpoint creates a new question.
   * Create new question using JSON request parameters.
   * Return JSON object
 * `curl http://127.0.0.1:5000/questions -X POST -H "Content-Type: application/json" -d '{"question": "How many student are fullstack dev?", "answer": "20", "difficulty": 3, "category": "5"}'`<br>
-{
+
+```{
   "question_id": 24, 
   "success": true, 
   "total_questions": 18
 }
+```
 
 
 #### POST /search
@@ -217,7 +221,7 @@ This endpoint creates a new question.
   * Returns JSON object with paginated matching questions.
 * `curl http://127.0.0.1:5000/search -X POST -H "Content-Type: application/json" -d '{"searchTerm": "usa"}'`<br>
 
-{
+```{
   "categories": {
     "1": "Science", 
     "2": "Art", 
@@ -239,7 +243,7 @@ This endpoint creates a new question.
   "success": true, 
   "total_questions": 1
 }
-
+```
 
 #### GET /categories/\<int:category_id\>/questions
 
@@ -248,7 +252,7 @@ This endpoint creates a new question.
   * Returns JSON object with paginated matching results.
 * `curl http://127.0.0.1:5000/categories/5/questions`<br>
 
-{
+```{
   "current_category": "Entertainment", 
   "questions": [
     {
@@ -276,22 +280,22 @@ This endpoint creates a new question.
   "success": true, 
   "total_questions": 3
 }
-
+```
 
 #### POST /quizzes
 
 * General:
   * Uses JSON request parameters of category and previous questions.
   * Returns JSON object with random question.
-* ```curl http://127.0.0.1:5000/quizzes -X POST -H "Content-Type: application/json" -d '{
+* `curl http://127.0.0.1:5000/quizzes -X POST -H "Content-Type: application/json" -d '{
             "previous_questions": [11],
             "quiz_category": {
                 "type": "Art",
                 "id": "2"
                 }
-            }'```<br>
+            }'`<br>
 
-    {
+    ```{
             "question": {
                 "answer": "One",
                 "category": "2",
@@ -301,6 +305,7 @@ This endpoint creates a new question.
             },
             "success": true
     }
+    ```
 
 ## Authors
 
