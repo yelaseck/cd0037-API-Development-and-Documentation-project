@@ -24,21 +24,25 @@ def create_app(test_config=None):
     # Customer function to format categorie
     def format_json(categories):
     
-        formatCategory = dict()
+        format_category = {}
 
         for category in categories:
-            formatCategory.update({
+            format_category.update({
                 category.id: category.type
             })
+        print("_____________________format_category_________________________")
+        print(format_category)
 
-        return formatCategory
+        return format_category
         
-        
+    # Customer function to paginate question
     def paginate_questions(request, questions):
         page = request.args.get('page', 1, type=int)
         start = (page - 1) * QUESTIONS_PER_PAGE
         end = start + QUESTIONS_PER_PAGE
         current_questions = [question.format() for question in questions]
+        print("_____________________current_questions_________________________")
+        print(current_questions)
 
         return current_questions[start:end]
 
@@ -47,7 +51,6 @@ def create_app(test_config=None):
     """
     @app.after_request
     def after_request(response):
-        """add in response header Acces-Control-Allow for all requests """
         response.headers.add('Access-Control-Allow-Headers', 'Content-Type, Authorization')
         response.headers.add('Access-Control-Allow-Methods', 'GET, POST, PATCH, DELETE, OPTIONS')
 
@@ -61,20 +64,18 @@ def create_app(test_config=None):
     """
     @app.route('/categories')
     def get_categories():
-        """
-        GET /categories
-        curl http://127.0.0.1:5000/categories
-        """
         try:
             categories = Category.query.all()
             print(categories)
             if len(categories) == 0:
                 abort(404)
 
-            formatted_categories = format_json(categories)
+            format_categories = format_json(categories)
+            print("_____________________format_categories_________________________")
+            print(format_categories)
             return jsonify({
                 'success': True,
-                'categories': formatted_categories,
+                'categories': format_categories,
                 'total_categories': len(categories)
             })
         except:
@@ -95,10 +96,6 @@ def create_app(test_config=None):
     """
     @app.route('/questions')
     def get_questions():
-        """
-        GET /questions
-        Sample: curl http://127.0.0.1:5000/questions
-        """
         try:
             questions = Question.query.order_by(Question.id).all()
 
@@ -107,14 +104,15 @@ def create_app(test_config=None):
                 abort(404)
 
             categories = Category.query.order_by(Category.id).all()
-            formatted_categories = format_json(categories)
-
+            format_categories = format_json(categories)
+            print("_____________________format_categories_________________________")
+            print(format_categories)
             return jsonify({
                 'success': True,
                 'questions': paginate,
                 'total_questions': len(questions),
                 'current_category': None,
-                'categories': formatted_categories
+                'categories': format_categories
             }), 200
         except:
             abort(500)
@@ -128,10 +126,6 @@ def create_app(test_config=None):
     """
     @app.route('/questions/<int:question_id>', methods=['DELETE'])
     def delete_question(question_id):
-        """
-        DELETE /question/{question_id}
-        curl http://127.0.0.1:5000/questions/3 -X DELETE
-        """
         try:
             question = Question.query.get(question_id) 
             if question is None:
@@ -157,17 +151,7 @@ def create_app(test_config=None):
     of the questions list in the "List" tab.
     """
     @app.route('/questions', methods=['POST'])
-    def new_question():
-        """
-        POST /question
-        curl http://127.0.0.1:5000/questions -X POST -H "Content-Type: application/json" -d '{
-            "question": "How many student are fullstack dev?",
-            "answer": "20",
-            "difficulty": 3,
-            "category": "5"
-            }'
-        """
-        
+    def new_question():       
         data = request.get_json()
         question = data.get('question', '')
         answer = data.get('answer', '')
@@ -179,10 +163,12 @@ def create_app(test_config=None):
         question_list = Question.query.all()
         questions_exist = [q.format()['question']
                               for q in question_list]
+        print("_____________________questions_exist_________________________")
+        print(questions_exist)
         if question in questions_exist:
             abort(422)
 
-        new_question_id = None
+        id_new_question = None
 
         try:
             new_question = Question(
@@ -192,7 +178,7 @@ def create_app(test_config=None):
                 difficulty
             )
             new_question.insert()
-            new_question_id = new_question.id
+            id_new_question = new_question.id
 
         except:
             abort(500)
@@ -200,7 +186,7 @@ def create_app(test_config=None):
         return jsonify({
             'success': True,
             'total_questions': len(Question.query.all()),
-            'question_id': new_question_id
+            'question_id': id_new_question
         }), 201
 
     """
@@ -215,12 +201,6 @@ def create_app(test_config=None):
     """
     @app.route('/search', methods=['POST'])
     def search_question():
-        """
-        POST /search
-        curl http://127.0.0.1:5000/search -X POST -H "Content-Type: application/json" -d '{
-        "searchTerm": "usa"
-        }'
-        """
         try:
             data = request.get_json()
             search_term = data.get('searchTerm', '')
@@ -229,6 +209,8 @@ def create_app(test_config=None):
 
             questions = Question.query.order_by(Question.id).filter(
                 Question.question.ilike(f'%{search_term}%')).all()
+            print("_____________________search_questions_________________________")
+            print(questions)
             if len(questions) == 0:
                 abort(404)
             format_questions = paginate_questions(request, questions)
@@ -256,15 +238,13 @@ def create_app(test_config=None):
     """
     @app.route('/categories/<int:category_id>/questions', methods=["GET"])
     def get_questions_by_category(category_id):
-        """
-        GET /categories/{category_id}/questions
-        curl http://127.0.0.1:5000/categories/5/questions
-        """
         try:
             category = Category.query.get(category_id).type
 
             questions = Question.query.order_by(Question.id).filter(
                 Question.category == str(category_id)).all()
+            print("_____________________questions_________________________")
+            print(questions)
             if len(questions) == 0:
                 abort(404)
 
@@ -292,16 +272,6 @@ def create_app(test_config=None):
     """
     @app.route('/quizzes', methods=['POST'])
     def get_random_question():
-        """
-        POST /quizzes
-        curl http://127.0.0.1:5000/quizzes -X POST -H "Content-Type: application/json" -d '{
-            "previous_questions": [11],
-            "quiz_category": {
-                "type": "Art",
-                "id": "2"
-                }
-            }'
-        """
         data = request.get_json()
         previous_questions = data.get('previous_questions', '')
         category = data.get('quiz_category', '')
@@ -316,7 +286,7 @@ def create_app(test_config=None):
             abort(404)
             
         question = None
-        print("_____________________previous-question_________________________")
+        print("_____________________previous_question_________________________")
         print(previous_questions)
         print(questions)
         while True:

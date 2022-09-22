@@ -36,31 +36,23 @@ class TriviaTestCase(unittest.TestCase):
     Write at least one test for each test for successful operation and for expected errors.
     """
     def test_paginate_questions(self):
-        """Tests success of question pagination"""
+        question_response = self.client().get('/questions')
+        datas = json.loads(question_response.data)
 
-        # get response and load data
-        response = self.client().get('/questions')
-        datas = json.loads(response.data)
-
-        # check status code and message
         self.assertEqual(datas['success'], True)
-        self.assertEqual(response.status_code, 200)
+        self.assertEqual(question_response.status_code, 200)
 
-        # check questions and total_questions return data
         self.assertTrue(len(datas['questions']))
         self.assertTrue(datas['total_questions'])
 
-    def test_paginate_question_fails_404(self):
-        """Test fail 404 question pagination"""
 
-        # send request with bad page data and load response
-        response = self.client().get('/questions?page=900')
-        data = json.loads(response.data)
+    def test_paginate_questions_fail(self):
+        question_response = self.client().get('/questions?page=900')
+        datas = json.loads(question_response.data)
 
-        # check status code, success and message value.
-        self.assertEqual(response.status_code, 404)
-        self.assertEqual(data['success'], False)
-        self.assertEqual(data['message'], 'Resource not found')
+        self.assertEqual(question_response.status_code, 404)
+        self.assertEqual(datas['success'], False)
+        self.assertEqual(datas['message'], 'Resource not found')
 
 
 # Make the tests conveniently executable
