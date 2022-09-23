@@ -250,7 +250,7 @@ def create_app(test_config=None):
 
             format_question = paginate_questions(request, questions)
         except:
-            abort(500)
+            abort(404)
 
         return jsonify({
             'success': True,
